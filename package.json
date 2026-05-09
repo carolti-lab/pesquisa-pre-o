@@ -1,0 +1,9 @@
+{
+  "name": "pesquisa-no",
+  "version": "1.0.0",
+  "description": "Pesquisa de preço Van Westendorp do Nó",
+  "private": true,
+  "dependencies": {
+    "@vercel/kv": "^3.0.0"
+  }
+}

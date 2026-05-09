@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Pesquisa Nó — ajude a definir o preço justo do sistema de gestão para confeitarias e padarias.">
+<title>Pesquisa · Nó</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --terracota: #ba6a4a;
+    --terracota-dark: #9d5638;
+    --sage: #71806b;
+    --sage-dark: #5a6856;
+    --creme: #fdf9e8;
+    --creme-dark: #f5efd6;
+    --tinta: #2a241f;
+    --tinta-soft: #5a4f47;
+    --linha: rgba(42, 36, 31, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--creme);
+    color: var(--tinta);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--linha);
+  }
+
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--terracota);
+    letter-spacing: -0.02em;
+  }
+
+  .progress-text {
+    font-size: 13px;
+    color: var(--tinta-soft);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 3px;
+    background: var(--creme-dark);
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--terracota);
+    width: 0%;
+    transition: width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  /* Main */
+  .main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  /* Screens */
+  .screen {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .screen.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Welcome screen */
+  .welcome-tag {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    background: rgba(113, 128, 107, 0.12);
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+
+  .welcome-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 6vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--tinta);
+    margin-bottom: 24px;
+  }
+
+  .welcome-title em {
+    color: var(--terracota);
+    font-style: italic;
+  }
+
+  .welcome-text {
+    font-size: 17px;
+    color: var(--tinta-soft);
+    line-height: 1.65;
+    margin-bottom: 16px;
+    max-width: 540px;
+  }
+
+  .welcome-meta {
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid var(--linha);
+    display: flex;
+    gap: 32px;
+    font-size: 14px;
+    color: var(--tinta-soft);
+  }
+
+  .welcome-meta span strong {
+    display: block;
+    color: var(--tinta);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  /* Question screens */
+  .question-number {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  .question-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(26px, 4vw, 36px);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--tinta);
+    margin-bottom: 16px;
+  }
+
+  .question-hint {
+    font-size: 15px;
+    color: var(--tinta-soft);
+    margin-bottom: 40px;
+    line-height: 1.6;
+    max-width: 540px;
+  }
+
+  /* Input */
+  .price-input-wrapper {
+    position: relative;
+    margin-bottom: 32px;
+    max-width: 360px;
+  }
+
+  .price-currency {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--terracota);
+    pointer-events: none;
+  }
+
+  .price-input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid var(--linha);
+    background: transparent;
+    font-family: 'DM Serif Display', serif;
+    font-size: 56px;
+    color: var(--tinta);
+    padding: 12px 0 12px 56px;
+    outline: none;
+    transition: border-color 0.2s ease;
+    letter-spacing: -0.02em;
+  }
+
+  .price-input:focus {
+    border-bottom-color: var(--terracota);
+  }
+
+  .price-input::placeholder {
+    color: var(--linha);
+  }
+
+  .price-input::-webkit-outer-spin-button,
+  .price-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .price-input { -moz-appearance: textfield; }
+
+  .price-suffix {
+    font-size: 14px;
+    color: var(--tinta-soft);
+    margin-top: 8px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Identification screen (entered after Q4) */
+  .id-field {
+    margin-bottom: 24px;
+  }
+
+  .id-label {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tinta-soft);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .id-input {
+    width: 100%;
+    border: 1px solid var(--linha);
+    background: white;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--tinta);
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .id-input:focus {
+    border-color: var(--terracota);
+  }
+
+  .id-optional {
+    font-size: 12px;
+    color: var(--tinta-soft);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 6px;
+  }
+
+  /* Buttons */
+  .btn {
+    background: var(--sage);
+    color: var(--creme);
+    border: none;
+    padding: 16px 36px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn:hover:not(:disabled) {
+    background: var(--sage-dark);
+    transform: translateY(-1px);
+  }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-arrow {
+    font-size: 18px;
+    transition: transform 0.2s ease;
+  }
+
+  .btn:hover:not(:disabled) .btn-arrow {
+    transform: translateX(2px);
+  }
+
+  .btn-link {
+    background: none;
+    color: var(--tinta-soft);
+    border: none;
+    padding: 14px 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 12px;
+  }
+
+  .btn-link:hover {
+    color: var(--tinta);
+  }
+
+  /* Error message */
+  .error-msg {
+    font-size: 13px;
+    color: var(--terracota-dark);
+    margin-top: 8px;
+    min-height: 18px;
+  }
+
+  /* Thank you screen */
+  .thanks-mark {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 96px;
+    color: var(--terracota);
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+
+  .thanks-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 5vw, 44px);
+    line-height: 1.1;
+    color: var(--tinta);
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .thanks-text {
+    font-size: 16px;
+    color: var(--tinta-soft);
+    line-height: 1.65;
+    margin-bottom: 16px;
+    max-width: 480px;
+  }
+
+  .thanks-signature {
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid var(--linha);
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--terracota);
+  }
+
+  .thanks-signature-meta {
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-size: 13px;
+    color: var(--tinta-soft);
+    margin-top: 4px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Footer */
+  .footer {
+    padding: 20px 32px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--tinta-soft);
+    border-top: 1px solid var(--linha);
+  }
+
+  .footer a {
+    color: var(--sage-dark);
+    text-decoration: none;
+  }
+
+  /* Loading state */
+  .loader {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .header { padding: 20px; }
+    .main { padding: 32px 20px; }
+    .footer { padding: 16px 20px; }
+    .price-input { font-size: 44px; padding-left: 44px; }
+    .price-currency { font-size: 28px; }
+    .welcome-meta { flex-direction: column; gap: 16px; }
+    .btn { padding: 14px 28px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">nó</div>
+    <div class="progress-text" id="progressText">pesquisa de preço</div>
+  </header>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- WELCOME -->
+      <section class="screen active" id="screen-welcome">
+        <span class="welcome-tag">5 minutos · 4 perguntas</span>
+        <h1 class="welcome-title">Quanto vale<br><em>a paz entre o balcão e a cozinha?</em></h1>
+        <p class="welcome-text">
+          Seu retorno vai me ajudar a definir o preço justo do <strong>Nó</strong> — o sistema feito por quem viveu a rotina, para quem vive a padaria &amp; confeitaria.
+        </p>
+        <p class="welcome-text">
+          São quatro perguntas curtas sobre o quanto você acha que esse tipo de ferramenta deveria custar por mês. Não existe resposta certa: o que vale é o seu instinto.
+        </p>
+        <div style="margin-top: 32px;">
+          <button class="btn" onclick="startSurvey()">
+            Começar pesquisa
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+        <div class="welcome-meta">
+          <span>tempo estimado<strong>5 minutos</strong></span>
+          <span>perguntas<strong>4 sobre preço + identificação</strong></span>
+          <span>seus dados<strong>são seus, sempre</strong></span>
+        </div>
+      </section>
+
+      <!-- Q1: MUITO BARATO -->
+      <section class="screen" id="screen-q1">
+        <div class="question-number">Pergunta 1 de 4</div>
+        <h2 class="question-text">A que preço mensal o Nó pareceria <em style="color:var(--terracota);font-style:italic;">tão barato</em> que você desconfiaria da qualidade?</h2>
+        <p class="question-hint">Pense no valor mínimo que ainda faria sentido. Abaixo desse, você pensaria "tem alguma coisa errada com esse sistema".</p>
+        <div class="price-input-wrapper">
+          <span class="price-currency">R$</span>
+          <input type="number" class="price-input" id="q1" placeholder="0" min="0" step="1" inputmode="numeric">
+        </div>
+        <div class="price-suffix">por mês</div>
+        <div class="error-msg" id="err-q1"></div>
+        <div style="margin-top: 32px;">
+          <button class="btn-link" onclick="goBack('welcome')">← voltar</button>
+          <button class="btn" id="btn-q1" onclick="answerQuestion(1)">
+            Próxima
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Q2: BARATO -->
+      <section class="screen" id="screen-q2">
+        <div class="question-number">Pergunta 2 de 4</div>
+        <h2 class="question-text">A que preço mensal o Nó seria <em style="color:var(--terracota);font-style:italic;">um bom negócio</em> — uma boa compra pelo dinheiro?</h2>
+        <p class="question-hint">O preço em que você diria "vale a pena, é justo pelo que entrega". Sem desconfiança, sem aperto.</p>
+        <div class="price-input-wrapper">
+          <span class="price-currency">R$</span>
+          <input type="number" class="price-input" id="q2" placeholder="0" min="0" step="1" inputmode="numeric">
+        </div>
+        <div class="price-suffix">por mês</div>
+        <div class="error-msg" id="err-q2"></div>
+        <div style="margin-top: 32px;">
+          <button class="btn-link" onclick="goBack('q1')">← voltar</button>
+          <button class="btn" id="btn-q2" onclick="answerQuestion(2)">
+            Próxima
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Q3: CARO -->
+      <section class="screen" id="screen-q3">
+        <div class="question-number">Pergunta 3 de 4</div>
+        <h2 class="question-text">A que preço mensal o Nó começaria a parecer <em style="color:var(--terracota);font-style:italic;">caro</em> — mas você ainda consideraria comprar?</h2>
+        <p class="question-hint">O preço em que você pensa duas vezes, mas o valor entregue ainda compensa o gasto.</p>
+        <div class="price-input-wrapper">
+          <span class="price-currency">R$</span>
+          <input type="number" class="price-input" id="q3" placeholder="0" min="0" step="1" inputmode="numeric">
+        </div>
+        <div class="price-suffix">por mês</div>
+        <div class="error-msg" id="err-q3"></div>
+        <div style="margin-top: 32px;">
+          <button class="btn-link" onclick="goBack('q2')">← voltar</button>
+          <button class="btn" id="btn-q3" onclick="answerQuestion(3)">
+            Próxima
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Q4: MUITO CARO -->
+      <section class="screen" id="screen-q4">
+        <div class="question-number">Pergunta 4 de 4</div>
+        <h2 class="question-text">A que preço mensal o Nó seria <em style="color:var(--terracota);font-style:italic;">tão caro</em> que você não consideraria comprar de jeito nenhum?</h2>
+        <p class="question-hint">O ponto em que você fecha a aba. Independentemente das funcionalidades, esse valor estaria fora de cogitação.</p>
+        <div class="price-input-wrapper">
+          <span class="price-currency">R$</span>
+          <input type="number" class="price-input" id="q4" placeholder="0" min="0" step="1" inputmode="numeric">
+        </div>
+        <div class="price-suffix">por mês</div>
+        <div class="error-msg" id="err-q4"></div>
+        <div style="margin-top: 32px;">
+          <button class="btn-link" onclick="goBack('q3')">← voltar</button>
+          <button class="btn" id="btn-q4" onclick="answerQuestion(4)">
+            Próxima
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- IDENTIFICATION -->
+      <section class="screen" id="screen-id">
+        <div class="question-number">Quase lá</div>
+        <h2 class="question-text">Pra fechar, conta um pouco sobre você.</h2>
+        <p class="question-hint">Esses dados ajudam a entender se o preço justo varia entre tipos de confeitaria. Se preferir o anonimato, deixe em branco — só os campos com asterisco são necessários.</p>
+
+        <div class="id-field">
+          <label class="id-label" for="id-name">Seu nome <span class="id-optional">(opcional)</span></label>
+          <input type="text" class="id-input" id="id-name" placeholder="Como você prefere ser chamada(o)">
+        </div>
+
+        <div class="id-field">
+          <label class="id-label" for="id-business">Nome da confeitaria/padaria <span class="id-optional">(opcional)</span></label>
+          <input type="text" class="id-input" id="id-business" placeholder="Ex: Doçura da Maria">
+        </div>
+
+        <div class="id-field">
+          <label class="id-label" for="id-size">Tamanho da operação *</label>
+          <select class="id-input" id="id-size" required>
+            <option value="">Selecione...</option>
+            <option value="solo">Sou eu sozinha(o)</option>
+            <option value="2-3">2 a 3 pessoas na operação</option>
+            <option value="4-10">4 a 10 pessoas</option>
+            <option value="10+">Mais de 10 pessoas</option>
+          </select>
+        </div>
+
+        <div class="id-field">
+          <label class="id-label" for="id-email">E-mail <span class="id-optional">(opcional, só se quiser receber o resultado)</span></label>
+          <input type="email" class="id-input" id="id-email" placeholder="seu@email.com">
+        </div>
+
+        <div class="error-msg" id="err-id"></div>
+
+        <div style="margin-top: 32px;">
+          <button class="btn-link" onclick="goBack('q4')">← voltar</button>
+          <button class="btn" id="btn-submit" onclick="submitSurvey()">
+            <span id="submit-label">Enviar respostas</span>
+            <span class="btn-arrow" id="submit-arrow">→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- THANKS -->
+      <section class="screen" id="screen-thanks">
+        <div class="thanks-mark">nó.</div>
+        <h2 class="thanks-title">Obrigada de verdade.</h2>
+        <p class="thanks-text">
+          Sua resposta vai ajudar a desenhar um preço que faz sentido pra quem realmente vive a confeitaria — não um número tirado do ar.
+        </p>
+        <p class="thanks-text">
+          Em breve, você vai ver o Nó tomando forma com base no que pessoas como você compartilharam. Se deixou seu e-mail, vou avisar quando o resultado da pesquisa estiver pronto.
+        </p>
+        <div class="thanks-signature">
+          Carol Iwai
+          <div class="thanks-signature-meta">fundadora do Nó · doce gestão para confeitarias e padarias</div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <a href="https://nosistema.com.br">nosistema.com.br</a> · doce gestão para confeitarias e padarias
+  </footer>
+
+<script>
+  const answers = { q1: null, q2: null, q3: null, q4: null };
+  const screenOrder = ['welcome', 'q1', 'q2', 'q3', 'q4', 'id', 'thanks'];
+  let currentScreen = 'welcome';
+
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    currentScreen = name;
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Auto-focus first input on the screen
+    setTimeout(() => {
+      const input = document.querySelector('#screen-' + name + ' input, #screen-' + name + ' select');
+      if (input && name !== 'welcome' && name !== 'thanks') input.focus();
+    }, 300);
+  }
+
+  function updateProgress() {
+    const idx = screenOrder.indexOf(currentScreen);
+    const pct = (idx / (screenOrder.length - 1)) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+
+    const labels = {
+      welcome: 'pesquisa de preço',
+      q1: '1 de 4 · muito barato',
+      q2: '2 de 4 · bom negócio',
+      q3: '3 de 4 · começa a pesar',
+      q4: '4 de 4 · fora de cogitação',
+      id: 'identificação',
+      thanks: 'concluída'
+    };
+    document.getElementById('progressText').textContent = labels[currentScreen] || '';
+  }
+
+  function startSurvey() { showScreen('q1'); }
+
+  function goBack(target) { showScreen(target); }
+
+  function answerQuestion(n) {
+    const input = document.getElementById('q' + n);
+    const errEl = document.getElementById('err-q' + n);
+    const value = parseFloat(input.value);
+
+    if (!input.value || isNaN(value) || value <= 0) {
+      errEl.textContent = 'Por favor, informe um valor em reais.';
+      input.focus();
+      return;
+    }
+
+    if (value > 100000) {
+      errEl.textContent = 'Esse valor parece alto demais — confira se digitou certo.';
+      return;
+    }
+
+    // Coherence check (only flags, doesn't block — user can still proceed)
+    if (n === 2 && value < answers.q1) {
+      errEl.textContent = 'Atenção: o preço de "bom negócio" geralmente é maior que o de "tão barato que desconfia". Confirme se quer mesmo prosseguir.';
+      // Allow proceeding despite warning — soft validation
+    } else if (n === 3 && value < answers.q2) {
+      errEl.textContent = 'Atenção: o preço "começa a pesar" geralmente é maior que o de "bom negócio". Confirme se quer mesmo prosseguir.';
+    } else if (n === 4 && value < answers.q3) {
+      errEl.textContent = 'Atenção: o preço "fora de cogitação" geralmente é maior que o "começa a pesar". Confirme se quer mesmo prosseguir.';
+    } else {
+      errEl.textContent = '';
+    }
+
+    answers['q' + n] = value;
+
+    if (n < 4) {
+      showScreen('q' + (n + 1));
+    } else {
+      showScreen('id');
+    }
+  }
+
+  async function submitSurvey() {
+    const errEl = document.getElementById('err-id');
+    const size = document.getElementById('id-size').value;
+
+    if (!size) {
+      errEl.textContent = 'Por favor, informe o tamanho da operação.';
+      return;
+    }
+
+    const btn = document.getElementById('btn-submit');
+    const label = document.getElementById('submit-label');
+    const arrow = document.getElementById('submit-arrow');
+    btn.disabled = true;
+    label.innerHTML = 'Enviando <span class="loader"></span>';
+    arrow.style.display = 'none';
+    errEl.textContent = '';
+
+    const payload = {
+      timestamp: new Date().toISOString(),
+      answers: answers,
+      identification: {
+        name: document.getElementById('id-name').value.trim(),
+        business: document.getElementById('id-business').value.trim(),
+        size: size,
+        email: document.getElementById('id-email').value.trim()
+      },
+      meta: {
+        userAgent: navigator.userAgent,
+        screenWidth: window.innerWidth,
+        referrer: document.referrer || 'direct'
+      }
+    };
+
+    try {
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) throw new Error('Erro no servidor');
+
+      showScreen('thanks');
+    } catch (err) {
+      // Fallback: save to localStorage so we don't lose data
+      const fallback = JSON.parse(localStorage.getItem('no_survey_fallback') || '[]');
+      fallback.push(payload);
+      localStorage.setItem('no_survey_fallback', JSON.stringify(fallback));
+
+      // Still show thanks — silent recovery
+      showScreen('thanks');
+      console.warn('Saved to local fallback:', err);
+    }
+  }
+
+  // Allow Enter key to advance
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      const screen = currentScreen;
+      if (screen === 'welcome') { e.preventDefault(); startSurvey(); }
+      else if (screen.startsWith('q')) {
+        const n = parseInt(screen.slice(1));
+        if (!isNaN(n)) { e.preventDefault(); answerQuestion(n); }
+      } else if (screen === 'id') { e.preventDefault(); submitSurvey(); }
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Pesquisa Nó</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --terracota: #ba6a4a;
+    --sage: #71806b;
+    --sage-dark: #5a6856;
+    --creme: #fdf9e8;
+    --creme-dark: #f5efd6;
+    --tinta: #2a241f;
+    --tinta-soft: #5a4f47;
+    --linha: rgba(42, 36, 31, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--creme);
+    color: var(--tinta);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding: 32px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--linha);
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--tinta);
+    letter-spacing: -0.01em;
+  }
+
+  h1 em { color: var(--terracota); font-style: italic; }
+
+  .login-box {
+    max-width: 360px;
+    margin: 80px auto;
+    padding: 32px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--linha);
+  }
+
+  .login-box label {
+    display: block;
+    font-size: 13px;
+    color: var(--tinta-soft);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  input[type="password"], input[type="text"] {
+    width: 100%;
+    border: 1px solid var(--linha);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+
+  .btn {
+    background: var(--terracota);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn:hover { background: #9d5638; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--sage-dark);
+    border: 1px solid var(--sage);
+  }
+
+  .btn-secondary:hover { background: var(--sage); color: white; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: white;
+    border: 1px solid var(--linha);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tinta-soft);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--terracota);
+  }
+
+  .stat-meta {
+    font-size: 13px;
+    color: var(--tinta-soft);
+    margin-top: 4px;
+  }
+
+  table {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--linha);
+    margin-top: 16px;
+  }
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid var(--linha);
+  }
+
+  th {
+    background: var(--creme-dark);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--tinta-soft);
+  }
+
+  td.num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--terracota);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover { background: var(--creme); }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--tinta-soft);
+  }
+
+  .error-msg {
+    color: #b94a3e;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  details {
+    margin-top: 24px;
+    background: white;
+    border: 1px solid var(--linha);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+
+  summary { cursor: pointer; font-weight: 600; }
+
+  pre {
+    margin-top: 16px;
+    background: var(--creme-dark);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div id="login" class="login-box">
+  <h1 style="font-size: 24px; margin-bottom: 16px;">Admin <em>nó</em></h1>
+  <p style="color: var(--tinta-soft); font-size: 14px; margin-bottom: 24px;">Pesquisa de preço · acesso restrito</p>
+  <label>Chave de acesso</label>
+  <input type="password" id="key-input" placeholder="••••••••" autofocus>
+  <div class="error-msg" id="login-error"></div>
+  <button class="btn" onclick="login()">Entrar</button>
+</div>
+
+<div id="dashboard" style="display: none;">
+  <div class="header">
+    <h1>Pesquisa <em>Nó</em> · respostas</h1>
+    <div>
+      <button class="btn btn-secondary" onclick="logout()">sair</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="actions">
+    <button class="btn" onclick="exportCSV()">📥 Baixar CSV</button>
+    <button class="btn btn-secondary" onclick="loadData()">🔄 Atualizar</button>
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<script>
+  let surveys = [];
+  let adminKey = '';
+
+  // Auto-login se já tiver chave salva
+  window.addEventListener('load', () => {
+    const saved = sessionStorage.getItem('no_admin_key');
+    if (saved) {
+      adminKey = saved;
+      tryLoad();
+    }
+  });
+
+  async function login() {
+    const input = document.getElementById('key-input');
+    const errEl = document.getElementById('login-error');
+    adminKey = input.value;
+
+    if (!adminKey) {
+      errEl.textContent = 'Informe a chave';
+      return;
+    }
+
+    errEl.textContent = '';
+    const ok = await tryLoad();
+    if (ok) sessionStorage.setItem('no_admin_key', adminKey);
+  }
+
+  function logout() {
+    sessionStorage.removeItem('no_admin_key');
+    location.reload();
+  }
+
+  async function tryLoad() {
+    try {
+      const res = await fetch('/api/admin?key=' + encodeURIComponent(adminKey));
+      if (res.status === 401) {
+        document.getElementById('login-error').textContent = 'Chave inválida';
+        return false;
+      }
+      if (!res.ok) throw new Error('Erro ' + res.status);
+
+      const data = await res.json();
+      surveys = data.surveys || [];
+
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      render();
+      return true;
+    } catch (err) {
+      document.getElementById('login-error').textContent = 'Erro ao carregar: ' + err.message;
+      return false;
+    }
+  }
+
+  async function loadData() {
+    await tryLoad();
+  }
+
+  function render() {
+    renderStats();
+    renderTable();
+  }
+
+  function renderStats() {
+    const statsEl = document.getElementById('stats');
+    if (surveys.length === 0) {
+      statsEl.innerHTML = '';
+      return;
+    }
+
+    const q1Avg = avg(surveys.map(s => s.answers.q1));
+    const q2Avg = avg(surveys.map(s => s.answers.q2));
+    const q3Avg = avg(surveys.map(s => s.answers.q3));
+    const q4Avg = avg(surveys.map(s => s.answers.q4));
+
+    statsEl.innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Total de respostas</div>
+        <div class="stat-value">${surveys.length}</div>
+        <div class="stat-meta">de 10 founding clients</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Muito barato (média)</div>
+        <div class="stat-value">R$ ${formatNum(q1Avg)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Bom negócio (média)</div>
+        <div class="stat-value">R$ ${formatNum(q2Avg)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Caro (média)</div>
+        <div class="stat-value">R$ ${formatNum(q3Avg)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Muito caro (média)</div>
+        <div class="stat-value">R$ ${formatNum(q4Avg)}</div>
+      </div>
+    `;
+  }
+
+  function renderTable() {
+    const el = document.getElementById('content');
+    if (surveys.length === 0) {
+      el.innerHTML = '<div class="empty">Nenhuma resposta ainda. Compartilhe o link <code>/index.html</code> com seus founding clients.</div>';
+      return;
+    }
+
+    let html = `
+      <table>
+        <thead>
+          <tr>
+            <th>Quando</th>
+            <th>Nome</th>
+            <th>Confeitaria</th>
+            <th>Tamanho</th>
+            <th>Q1<br><span style="font-weight:400;text-transform:none;font-size:11px;">muito barato</span></th>
+            <th>Q2<br><span style="font-weight:400;text-transform:none;font-size:11px;">bom negócio</span></th>
+            <th>Q3<br><span style="font-weight:400;text-transform:none;font-size:11px;">caro</span></th>
+            <th>Q4<br><span style="font-weight:400;text-transform:none;font-size:11px;">muito caro</span></th>
+            <th>E-mail</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    surveys.forEach(s => {
+      const id = s.identification || {};
+      const date = new Date(s.submittedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+      html += `
+        <tr>
+          <td>${date}</td>
+          <td>${escapeHtml(id.name) || '<span style="color:#aaa;">—</span>'}</td>
+          <td>${escapeHtml(id.business) || '<span style="color:#aaa;">—</span>'}</td>
+          <td>${escapeHtml(id.size) || '—'}</td>
+          <td class="num">${s.answers.q1}</td>
+          <td class="num">${s.answers.q2}</td>
+          <td class="num">${s.answers.q3}</td>
+          <td class="num">${s.answers.q4}</td>
+          <td style="font-size:12px;">${escapeHtml(id.email) || '<span style="color:#aaa;">—</span>'}</td>
+        </tr>
+      `;
+    });
+
+    html += '</tbody></table>';
+
+    html += `
+      <details>
+        <summary>Ver JSON bruto (para o gráfico Van Westendorp)</summary>
+        <pre>${escapeHtml(JSON.stringify(surveys.map(s => s.answers), null, 2))}</pre>
+      </details>
+    `;
+
+    el.innerHTML = html;
+  }
+
+  function exportCSV() {
+    if (surveys.length === 0) {
+      alert('Nenhuma resposta para exportar.');
+      return;
+    }
+
+    const headers = ['data', 'nome', 'confeitaria', 'tamanho', 'email', 'q1_muito_barato', 'q2_bom_negocio', 'q3_caro', 'q4_muito_caro'];
+    const rows = surveys.map(s => {
+      const id = s.identification || {};
+      return [
+        s.submittedAt,
+        csvEscape(id.name),
+        csvEscape(id.business),
+        csvEscape(id.size),
+        csvEscape(id.email),
+        s.answers.q1,
+        s.answers.q2,
+        s.answers.q3,
+        s.answers.q4
+      ].join(',');
+    });
+
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pesquisa_no_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function avg(arr) {
+    if (!arr.length) return 0;
+    return arr.reduce((a, b) => a + b, 0) / arr.length;
+  }
+
+  function formatNum(n) {
+    return n.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+  }
+
+  function csvEscape(v) {
+    if (v == null) return '';
+    const s = String(v);
+    if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+    return s;
+  }
+
+  function escapeHtml(v) {
+    if (v == null) return '';
+    return String(v)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  document.getElementById('key-input')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') login();
+  });
+</script>
+</body>
+</html>
